@@ -4,6 +4,11 @@
     <item>
         <shape android:shape="oval">
             <solid android:color="#000000"/>
+            <padding
+                android:top="2dp"
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"/>
         </shape>
     </item>
 </layer-list>

@@ -3,7 +3,15 @@
     <item android:drawable="@drawable/cell_empty"/>
     <item>
         <shape android:shape="oval">
-            <solid android:color="#FF0000"/>
+            <solid android:color="#FF0000" />
+            <stroke
+                android:width="4dp"
+                android:color="#000000" />
+            <padding
+                android:top="100dp"
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"/>
         </shape>
     </item>
 </layer-list>

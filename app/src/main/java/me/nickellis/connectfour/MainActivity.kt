@@ -42,13 +42,12 @@ class MainActivity : AppCompatActivity() {
     ) as ImageView
 
     vImageView.setBackgroundResource(
-      if (Random().nextInt(1) == 0) R.drawable.cell_black
-      else R.drawable.cell_red
+      when (Random().nextInt(3)) {
+        1 -> R.drawable.cell_black
+        2 -> R.drawable.cell_red
+        else -> R.drawable.cell_empty
+      }
     )
-
-    val rnd = Random()
-    val color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-    vImageView.setBackgroundColor(color)
 
     this.addView(vImageView)
     return vImageView
