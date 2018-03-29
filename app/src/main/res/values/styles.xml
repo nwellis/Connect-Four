@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <string name="TextNormal">
+        <item name="textColor">@color/grey900</item>
+        <item name="textSize">14sp</item>
+    </string>
+
+    <string name="TextLarge">
+        <item name="textColor">@color/grey900</item>
+        <item name="textSize">20sp</item>
+    </string>
+
 </resources>

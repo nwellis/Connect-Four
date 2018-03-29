@@ -34,7 +34,12 @@ class Board(val numRows: Int = 6, val numColumns: Int = 7) : ReadOnlyBoard {
   private var whosTurn = Piece.Black
   fun whosTurn(): Player? = players.firstOrNull { it?.piece == whosTurn }
 
-  fun look(column: Int): Piece = columns[column].peek()
+  fun look(column: Int): Piece? {
+    return when(columns[column].size) {
+      0 -> null
+      else -> columns[column].peek()
+    }
+  }
 
   fun tryMakeMove(column: Int, piece: Piece): String? {
     return when {

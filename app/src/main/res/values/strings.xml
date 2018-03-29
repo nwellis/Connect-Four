@@ -3,4 +3,10 @@
     <string name="begin">Begin</string>
     <string name="cancel">Cancel</string>
     <string name="vs">VS</string>
+    <string name="blacks_turn">Black\'s turn</string>
+    <string name="reds_turn">Red\'s turn</string>
+    <string name="start_the_game">Start the game</string>
+    <string name="black_won">Black won!</string>
+    <string name="red_won">Red won!</string>
+    <string name="game_is_a_draw">Game is a draw!</string>
 </resources>

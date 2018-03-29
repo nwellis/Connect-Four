@@ -12,7 +12,6 @@ import icepick.State
 import kotlinx.android.synthetic.main.activity_main.*
 import me.nickellis.connectfour.data.Board
 import me.nickellis.connectfour.data.Piece
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,14 +25,26 @@ class MainActivity : AppCompatActivity() {
     setupBoard()
     findPlayers()
 
+    // Initialize the board
+    if (savedInstanceState == null) {
+      board.reset()
+      vAction.setText(R.string.begin)
+      vInfo.setText(R.string.start_the_game)
+    }
+
     vAction.setOnClickListener {
       if (inGame) {
         board.reset()
         vAction.setText(R.string.begin)
+        vInfo.setText(R.string.start_the_game)
       } else {
         board.addPlayer(vPlayer1.adapter.getItem(0) as Player)
         board.addPlayer(vPlayer2.adapter.getItem(0) as Player)
         vAction.setText(R.string.cancel)
+        vInfo.setText(when (board.whosTurn()?.piece) {
+          Piece.Black -> R.string.blacks_turn
+          else -> R.string.reds_turn
+        })
       }
       inGame = !inGame
     }
@@ -68,10 +79,20 @@ class MainActivity : AppCompatActivity() {
         Piece.Black -> R.drawable.cell_black
         Piece.Red -> R.drawable.cell_red
       })
+      vInfo.setText(when (board.whosTurn()?.piece) {
+        Piece.Black -> R.string.blacks_turn
+        else -> R.string.reds_turn
+      })
     }
 
     board.onWin { winners ->
+      val msgId = when(winners.firstOrNull()?.piece) {
+        Piece.Black -> R.string.black_won
+        Piece.Red -> R.string.red_won
+        else -> R.string.game_is_a_draw
+      }
 
+      vInfo.setText(msgId)
     }
 
     board.onReset {

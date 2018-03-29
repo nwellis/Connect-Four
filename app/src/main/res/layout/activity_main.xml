@@ -42,4 +42,12 @@
         android:layout_margin="8dp"
         android:text="@string/begin"/>
 
+    <TextView
+        android:id="@+id/vInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/grey900"
+        android:gravity="center"
+        android:textSize="20sp"/>
+
 </LinearLayout>
