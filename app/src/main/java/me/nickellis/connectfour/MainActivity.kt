@@ -34,20 +34,28 @@ class MainActivity : AppCompatActivity() {
 
     vAction.setOnClickListener {
       if (inGame) {
-        board.reset()
-        vAction.setText(R.string.begin)
-        vInfo.setText(R.string.start_the_game)
+        resetGame()
       } else {
-        board.addPlayer(vPlayer1.adapter.getItem(0) as Player)
-        board.addPlayer(vPlayer2.adapter.getItem(0) as Player)
-        vAction.setText(R.string.cancel)
-        vInfo.setText(when (board.whosTurn()?.piece) {
-          Piece.Black -> R.string.blacks_turn
-          else -> R.string.reds_turn
-        })
+        startGame()
       }
       inGame = !inGame
     }
+  }
+
+  private fun startGame() {
+    board.addPlayer(vPlayer1.adapter.getItem(0) as Player)
+    board.addPlayer(vPlayer2.adapter.getItem(0) as Player)
+    vAction.setText(R.string.cancel)
+    vInfo.setText(when (board.whosTurn()?.piece) {
+      Piece.Black -> R.string.blacks_turn
+      else -> R.string.reds_turn
+    })
+  }
+
+  private fun resetGame() {
+    board.reset()
+    vAction.setText(R.string.begin)
+    vInfo.setText(R.string.start_the_game)
   }
 
   private fun findPlayers() {
@@ -62,6 +70,7 @@ class MainActivity : AppCompatActivity() {
       val vColumn = vBoard.addColumn()
       (0 until board.numOfRows()).forEach { row ->
         vColumn.addCell().setOnClickListener {
+          if (!inGame) startGame()
           board.whosTurn()?.apply {
             val msg = board.tryMakeMove(col, piece)
             if (msg != null) {
