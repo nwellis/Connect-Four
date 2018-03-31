@@ -91,11 +91,6 @@ class Board(
   }
 
   fun computeWinners(): List<Player> {
-    //Special case, if the board is full there are 2 winners (a draw)
-//    columns
-//      .filter { it.size != numRows }
-//      .filter { it.firstOrNull { it. } }
-
     val possibleWins = mutableListOf<List<Piece>>()
 
     //Vertical Win
@@ -122,7 +117,13 @@ class Board(
       traverse(c, 0, 1, 1)
     })
 
-    return possibleWins.mapNotNull { checkForConsecutive(it) }
+    val winners = possibleWins.mapNotNull { checkForConsecutive(it) }
+    return if (winners.isEmpty() && columns.sumBy { it.size } == numRows * numColumns) {
+      //Draw, everyone wins!!!
+      listOfNotNull(player1, player2)
+    } else {
+      winners
+    }
   }
 
   private fun traverse(
