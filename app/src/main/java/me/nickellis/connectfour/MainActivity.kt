@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
       val vRow = vColumn.getChildAt(row) as ImageView
       vRow.setImageResource(when(piece) {
         Piece.Black -> R.drawable.cell_black
-        Piece.Red -> R.drawable.cell_red
+        else -> R.drawable.cell_red
       })
       vInfo.setText(when (board.whosTurn()?.piece) {
         Piece.Black -> R.string.blacks_turn
@@ -115,14 +115,6 @@ class MainActivity : AppCompatActivity() {
     val vImageView = layoutInflater.inflate(
       R.layout.board_cell, this, false
     ) as ImageView
-
-//    vImageView.setBackgroundResource(
-//      when (Random().nextInt(3)) {
-//        1 -> R.drawable.cell_black
-//        2 -> R.drawable.cell_red
-//        else -> R.drawable.cell_empty
-//      }
-//    )
 
     vImageView.setImageResource(R.drawable.cell_empty)
     this.addView(vImageView)

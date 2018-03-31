@@ -1,3 +1,3 @@
 package me.nickellis.connectfour.data
 
-enum class Piece { Black, Red }
+enum class Piece { Empty, Black, Red }
