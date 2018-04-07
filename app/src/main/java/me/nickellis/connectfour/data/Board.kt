@@ -9,6 +9,8 @@ class Board(
   val toWin: Int = 4
 ) : ReadOnlyBoard {
 
+  private val pieceToStart = Piece.Black
+
   private var onMoveMade: ((row: Int, col: Int, piece: Piece) -> Unit)? = null
   fun onMoveMade(l: (row: Int, col: Int, piece: Piece) -> Unit) {
     onMoveMade = l
@@ -36,7 +38,7 @@ class Board(
   private val players get() = listOf(player1, player2)
   private val columns = Array(numOfCols()) { Stack<Piece>() }
 
-  private var whosTurn = Piece.Black
+  private var whosTurn: Piece? = pieceToStart
   fun whosTurn(): Player? = players.firstOrNull { it?.piece == whosTurn }
 
   fun look(column: Int): Piece? {
@@ -53,14 +55,21 @@ class Board(
       piece != whosTurn -> "It's not your turn!"
       columns[column].size == numOfRows() -> "This column is full"
       else -> {
-        whosTurn = if (piece == Piece.Black) Piece.Red else Piece.Black
         columns[column].push(piece)
-        onMoveMade?.invoke(numRows - columns[column].size, column, piece)
 
         winners.addAll(computeWinners())
         if (winners.isNotEmpty()) {
+          whosTurn = null
           onWin?.invoke(winners)
         }
+
+        whosTurn = when {
+          winners.isNotEmpty() -> null
+          piece == Piece.Black -> Piece.Red
+          else -> Piece.Black
+        }
+
+        onMoveMade?.invoke(numRows - columns[column].size, column, piece)
 
         return null
       }
@@ -78,6 +87,7 @@ class Board(
     columns.forEach { it.clear() }
     player1 = null
     player2 = null
+    whosTurn = pieceToStart
     winners.clear()
     onReset?.invoke()
   }
@@ -90,7 +100,7 @@ class Board(
     }
   }
 
-  fun computeWinners(): List<Player> {
+  private fun computeWinners(): List<Player> {
     val possibleWins = mutableListOf<List<Piece>>()
 
     //Vertical Win

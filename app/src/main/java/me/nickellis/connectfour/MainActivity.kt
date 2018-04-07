@@ -10,6 +10,10 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import icepick.State
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import me.nickellis.connectfour.ai.AI
 import me.nickellis.connectfour.data.Board
 import me.nickellis.connectfour.data.Piece
 
@@ -17,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
   @State @JvmField var inGame = false
   private val board = Board()
+  private val tasks: MutableList<Job> = mutableListOf()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -43,13 +48,20 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun startGame() {
-    board.addPlayer(vPlayer1.adapter.getItem(0) as Player)
-    board.addPlayer(vPlayer2.adapter.getItem(0) as Player)
-    vAction.setText(R.string.cancel)
+    board.addPlayer(vPlayer1.selectedItem as Player)
+    board.addPlayer(vPlayer2.selectedItem as Player)
+    vAction.setText(R.string.reset)
     vInfo.setText(when (board.whosTurn()?.piece) {
       Piece.Black -> R.string.blacks_turn
       else -> R.string.reds_turn
     })
+
+    val player = board.whosTurn()
+    if (player is AI) {
+      tasks.add(launch(UI) {
+        makeAIMove(player, player.piece)
+      })
+    }
   }
 
   private fun resetGame() {
@@ -70,8 +82,12 @@ class MainActivity : AppCompatActivity() {
       val vColumn = vBoard.addColumn()
       (0 until board.numOfRows()).forEach { row ->
         vColumn.addCell().setOnClickListener {
-          if (!inGame) startGame()
+          if (!inGame) {
+            startGame()
+            inGame = true
+          }
           board.whosTurn()?.apply {
+            if (this is AI) return@apply
             val msg = board.tryMakeMove(col, piece)
             if (msg != null) {
               Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
@@ -88,10 +104,18 @@ class MainActivity : AppCompatActivity() {
         Piece.Black -> R.drawable.cell_black
         else -> R.drawable.cell_red
       })
-      vInfo.setText(when (board.whosTurn()?.piece) {
-        Piece.Black -> R.string.blacks_turn
-        else -> R.string.reds_turn
-      })
+
+      // Wait for user input, or run AI move
+      val player = board.whosTurn()
+      when {
+        player is AI -> {
+          tasks.add(launch(UI) {
+            makeAIMove(player, player.piece)
+          })
+        }
+        player?.piece == Piece.Black -> vInfo.setText(R.string.blacks_turn)
+        player?.piece == Piece.Red -> vInfo.setText(R.string.reds_turn)
+      }
     }
 
     board.onWin { winners ->
@@ -109,6 +133,12 @@ class MainActivity : AppCompatActivity() {
         .flatMap { it.getChildren<ImageView>() }
         .forEach { it.setImageResource(R.drawable.cell_empty) }
     }
+  }
+
+  private suspend fun makeAIMove(r2d2: AI, piece: Piece) {
+    vInfo.text = resources.getString(R.string.s_is_thinking, r2d2.toString())
+    val move = r2d2.makeMove(board)
+    board.tryMakeMove(move, piece)
   }
 
   private fun ViewGroup.addColumn(): ViewGroup {

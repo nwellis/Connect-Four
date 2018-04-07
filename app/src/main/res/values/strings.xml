@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">ConnectFour</string>
+    <string name="app_name">Connect Four</string>
     <string name="begin">Begin</string>
     <string name="cancel">Cancel</string>
+    <string name="reset">Reset</string>
     <string name="vs">VS</string>
     <string name="blacks_turn">Black\'s turn</string>
     <string name="reds_turn">Red\'s turn</string>
@@ -9,4 +10,5 @@
     <string name="black_won">Black won!</string>
     <string name="red_won">Red won!</string>
     <string name="game_is_a_draw">Game is a draw!</string>
+    <string name="s_is_thinking">%s is thinking…</string>
 </resources>
