@@ -27,9 +27,14 @@ class Board(
     onReset = l
   }
 
-  override fun getColumn(column: Int): List<Piece> = columns[column].map { it }
+
   override fun numOfCols(): Int = numColumns
   override fun numOfRows(): Int = numRows
+
+  override fun getColumn(column: Int): List<Piece> = columns[column].map { it }
+  override fun getPiece(c: Int, r: Int): Piece {
+    return columns.getOrNull(c)?.getOrNull(r) ?: Piece.Empty
+  }
 
   private var player1: Player? = null
   private var player2: Player? = null
@@ -101,31 +106,7 @@ class Board(
   }
 
   private fun computeWinners(): List<Player> {
-    val possibleWins = mutableListOf<List<Piece>>()
-
-    //Vertical Win
-    possibleWins.addAll(columns.map { it.toList() }) //easy :)
-
-    //Horizontal Win
-    possibleWins.addAll((0 until numRows).map { r ->
-      traverse(0, r, 1, 0)
-    })
-
-    //Upward Diagonal Win
-    possibleWins.addAll((numRows-1 downTo toWin-1).map { r ->
-      traverse(0, r, 1, -1)
-    })
-    possibleWins.addAll((1..numColumns-toWin).map { c ->
-      traverse(c, 0, 1, -1)
-    })
-
-    //Downward Diagonal Win
-    possibleWins.addAll((0..numRows-toWin).map { r ->
-      traverse(0, r, 1, 1)
-    })
-    possibleWins.addAll((1..numColumns-toWin).map { c ->
-      traverse(c, 0, 1, 1)
-    })
+    val possibleWins = allLines()
 
     val winners = possibleWins.mapNotNull { checkForConsecutive(it) }
     return if (winners.isEmpty() && columns.sumBy { it.size } == numRows * numColumns) {
@@ -134,6 +115,36 @@ class Board(
     } else {
       winners
     }
+  }
+
+  private fun allLines(): List<List<Piece>> {
+    val lines = mutableListOf<List<Piece>>()
+
+    //Vertical Win
+    lines.addAll(columns.map { it.toList() }) //easy :)
+
+    //Horizontal Win
+    lines.addAll((0 until numRows).map { r ->
+      traverse(0, r, 1, 0)
+    })
+
+    //Upward Diagonal Win
+    lines.addAll((numRows-1 downTo toWin-1).map { r ->
+      traverse(0, r, 1, -1)
+    })
+    lines.addAll((1..numColumns-toWin).map { c ->
+      traverse(c, 0, 1, -1)
+    })
+
+    //Downward Diagonal Win
+    lines.addAll((0..numRows-toWin).map { r ->
+      traverse(0, r, 1, 1)
+    })
+    lines.addAll((1..numColumns-toWin).map { c ->
+      traverse(c, 0, 1, 1)
+    })
+
+    return lines
   }
 
   private fun traverse(
@@ -147,7 +158,7 @@ class Board(
     var c = startC
     var r = startR
     while (r in (0 until numRows) && c in (0 until numColumns)) {
-      pieces.add(getPiece(c, r) ?: Piece.Empty)
+      pieces.add(getPiece(c, r))
       c += deltaX
       r += deltaY
     }
@@ -169,13 +180,9 @@ class Board(
         .forEach { consecutive[it.key] = 0 }
       consecutive[piece] = (consecutive[piece] ?: 0) + 1
 
-      if (consecutive[piece] == toWin) return playerWith(piece)
+      if ((consecutive[piece] ?: 0) >= toWin) return playerWith(piece)
     }
 
     return null
-  }
-
-  private fun getPiece(c: Int, r: Int): Piece? {
-    return columns.getOrNull(c)?.getOrNull(r)
   }
 }
