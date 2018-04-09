@@ -2,6 +2,7 @@ package me.nickellis.connectfour
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     setupBoard()
     findPlayers()
 
-    // Initialize the board
+    // Initialize the pieces
     if (savedInstanceState == null) {
       board.reset()
       vAction.setText(R.string.begin)
@@ -138,7 +139,14 @@ class MainActivity : AppCompatActivity() {
   private suspend fun makeAIMove(r2d2: AI, piece: Piece) {
     vInfo.text = resources.getString(R.string.s_is_thinking, r2d2.toString())
     val move = r2d2.makeMove(board)
-    board.tryMakeMove(move, piece)
+    val msg = board.tryMakeMove(move, piece)
+    if (msg != null) {
+      val error = "$r2d2 made an invalid move on column $move: $msg"
+      Log.e("MainActivity", error)
+      if (BuildConfig.DEBUG) {
+        vInfo.text = error
+      }
+    }
   }
 
   private fun ViewGroup.addColumn(): ViewGroup {

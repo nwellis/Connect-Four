@@ -2,6 +2,8 @@ package me.nickellis.connectfour.data
 
 import me.nickellis.connectfour.Player
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 class Board(
   val numRows: Int = 6,
@@ -25,15 +27,6 @@ class Board(
   private var onReset: (() -> Unit)? = null
   fun onReset(l: () -> Unit) {
     onReset = l
-  }
-
-
-  override fun numOfCols(): Int = numColumns
-  override fun numOfRows(): Int = numRows
-
-  override fun getColumn(column: Int): List<Piece> = columns[column].map { it }
-  override fun getPiece(c: Int, r: Int): Piece {
-    return columns.getOrNull(c)?.getOrNull(r) ?: Piece.Empty
   }
 
   private var player1: Player? = null
@@ -147,25 +140,6 @@ class Board(
     return lines
   }
 
-  private fun traverse(
-    startC: Int,
-    startR: Int,
-    deltaX: Int,
-    deltaY: Int
-  ): List<Piece> {
-    val pieces = mutableListOf<Piece>()
-
-    var c = startC
-    var r = startR
-    while (r in (0 until numRows) && c in (0 until numColumns)) {
-      pieces.add(getPiece(c, r))
-      c += deltaX
-      r += deltaY
-    }
-
-    return pieces
-  }
-
   private fun checkForConsecutive(pieces: List<Piece>): Player? {
     if (pieces.size < toWin) return null
 
@@ -184,5 +158,52 @@ class Board(
     }
 
     return null
+  }
+
+  override fun numOfCols(): Int = numColumns
+  override fun numOfRows(): Int = numRows
+
+  override fun pieces(): List<List<Piece>> = columns
+    .map { it.toMutableList() }
+    .map {
+      while (it.size < numRows) it.add(Piece.Empty)
+      it.toList()
+    }
+
+  override fun getPiece(c: Int, r: Int): Piece {
+    return columns.getOrNull(c)?.getOrNull(r) ?: Piece.Empty
+  }
+
+  override fun traverse(
+    startC: Int,
+    startR: Int,
+    deltaX: Int,
+    deltaY: Int
+  ): List<Piece> {
+    val pieces = mutableListOf<Piece>()
+
+    var c = startC
+    var r = startR
+    while (r in (0 until numRows) && c in (0 until numColumns)) {
+      pieces.add(getPiece(c, r))
+      c += deltaX
+      r += deltaY
+    }
+
+    return pieces
+  }
+
+  override fun linesAtPoint(c: Int, r: Int): List<List<Piece>> {
+    val topC = max(r - c, numColumns - 1)
+    val topR = min(r + c, numRows - 1)
+    val botC = max(c - r, 0)
+    val botR = max(r - c, 0)
+
+    return listOf(
+      traverse(0, r, 1, 0), //horizontal
+      traverse(c, 0, 0, 1), //vertical
+      traverse(topC, topR, -1, -1), //downward diagonal
+      traverse(botC, botR, 1, 1) //upward diagonal
+    )
   }
 }

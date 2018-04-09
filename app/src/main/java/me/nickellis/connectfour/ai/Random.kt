@@ -11,9 +11,9 @@ import java.util.Random
 class Random(piece: Piece) : Player(piece, false), AI {
 
   override suspend fun makeMove(board: ReadOnlyBoard): Int {
-    val moves = (0 until board.numOfCols())
-      .map { Pair(it, board.getColumn(it)) }
-      .filter { it.second.size < board.numOfRows() }
+    val moves = board.pieces()
+      .mapIndexed { c, column -> Pair(c, column) }
+      .filter { it.second.contains(Piece.Empty) }
 
     return moves[Random().nextInt(moves.size)].first
   }

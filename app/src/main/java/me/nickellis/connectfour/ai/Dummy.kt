@@ -10,8 +10,8 @@ import me.nickellis.connectfour.data.ReadOnlyBoard
 class Dummy(piece: Piece) : Player(piece, false), AI {
 
   override suspend fun makeMove(board: ReadOnlyBoard): Int {
-    return (0 until board.numOfCols())
-      .indexOfFirst { board.getColumn(it).size < board.numOfRows() }
+    return board.pieces()
+      .indexOfFirst { it.contains(Piece.Empty) }
   }
 
   override fun toString(): String = "Dummy"
