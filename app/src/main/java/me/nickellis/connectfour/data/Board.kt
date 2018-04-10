@@ -162,6 +162,7 @@ class Board(
 
   override fun numOfCols(): Int = numColumns
   override fun numOfRows(): Int = numRows
+  override fun toWin(): Int = toWin
 
   override fun pieces(): List<List<Piece>> = columns
     .map { it.toMutableList() }

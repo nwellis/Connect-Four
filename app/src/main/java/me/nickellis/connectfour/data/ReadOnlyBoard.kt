@@ -12,6 +12,11 @@ interface ReadOnlyBoard {
   fun numOfRows(): Int
 
   /**
+   * Number in a row needed to win
+   */
+  fun toWin(): Int
+
+  /**
    * All the current [Piece]s on the board. The first list is the list of columns of size
    * [numOfCols], the left column being the 0 index. The inner lists are a list of size [numOfRows],
    * the bottom row being the index 0.
