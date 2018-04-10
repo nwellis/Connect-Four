@@ -23,34 +23,4 @@ interface ReadOnlyBoard {
    * @return A matrix of pieces that represent the board.
    */
   fun pieces(): List<List<Piece>>
-
-  /**
-   * Will get the horizontal, vertical, and diagonals that intersect with a given point.
-   * @param c column index
-   * @param r row index
-   * @return A list of size 4 with lines of varying sizes.
-   */
-  fun linesAtPoint(c: Int, r: Int): List<List<Piece>>
-
-  /**
-   * Gets the piece at the given point
-   * @param c column index
-   * @param r row index
-   * @return A [Piece]
-   */
-  fun getPiece(c: Int, r: Int): Piece
-
-  /**
-   * Will traverse over the pieces given a point. Movement is determined by the delta arguments
-   * @param startC column index starting point
-   * @param startR row index starting point
-   * @param deltaX horizontal movement to take for each step
-   * @param deltaY vertical movement to take for each step
-   */
-  fun traverse(
-    startC: Int,
-    startR: Int,
-    deltaX: Int,
-    deltaY: Int
-  ): List<Piece>
 }
