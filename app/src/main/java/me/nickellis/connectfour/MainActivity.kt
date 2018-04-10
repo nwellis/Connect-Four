@@ -98,9 +98,9 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    board.onMoveMade { row, col, piece ->
+    board.onMoveMade { col, row, piece ->
       val vColumn = vBoard.getChildAt(col) as ViewGroup
-      val vRow = vColumn.getChildAt(row) as ImageView
+      val vRow = vColumn.getChildAt(vColumn.childCount - row - 1) as ImageView
       vRow.setImageResource(when(piece) {
         Piece.Black -> R.drawable.cell_black
         else -> R.drawable.cell_red

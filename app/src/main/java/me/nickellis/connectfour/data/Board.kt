@@ -2,7 +2,7 @@ package me.nickellis.connectfour.data
 
 import me.nickellis.connectfour.Player
 import me.nickellis.connectfour.allWinLines
-import java.util.*
+import me.nickellis.connectfour.isFull
 
 class Board(
   val numRows: Int = 6,
@@ -33,26 +33,20 @@ class Board(
   private var winners: MutableList<Player> = mutableListOf()
 
   private val players get() = listOf(player1, player2)
-  private val columns = Array(numOfCols()) { Stack<Piece>() }
+  private var columns = MutableList(numColumns) { MutableList(numRows) { Piece.Empty } }
 
   private var whosTurn: Piece? = pieceToStart
   fun whosTurn(): Player? = players.firstOrNull { it?.piece == whosTurn }
 
-  fun look(column: Int): Piece? {
-    return when(columns[column].size) {
-      0 -> null
-      else -> columns[column].peek()
-    }
-  }
-
-  fun tryMakeMove(column: Int, piece: Piece): String? {
+  fun tryMakeMove(c: Int, piece: Piece): String? {
     return when {
       winners.isNotEmpty() -> "Someone has already won"
       player1 == null || player2 == null -> "Need two players"
       piece != whosTurn -> "It's not your turn!"
-      columns[column].size == numOfRows() -> "This column is full"
+      columns[c].none { it == Piece.Empty } -> "This column is full"
       else -> {
-        columns[column].push(piece)
+        val r = columns[c].indexOfFirst { it == Piece.Empty }
+        columns[c][r] = piece
 
         winners.addAll(computeWinners())
         if (winners.isNotEmpty()) {
@@ -66,7 +60,7 @@ class Board(
           else -> Piece.Black
         }
 
-        onMoveMade?.invoke(numRows - columns[column].size, column, piece)
+        onMoveMade?.invoke(c, r, piece)
 
         return null
       }
@@ -81,7 +75,7 @@ class Board(
   }
 
   fun reset() {
-    columns.forEach { it.clear() }
+    columns = columns.map { it.map { Piece.Empty }.toMutableList() }.toMutableList()
     player1 = null
     player2 = null
     whosTurn = pieceToStart
@@ -98,10 +92,10 @@ class Board(
   }
 
   private fun computeWinners(): List<Player> {
-    val possibleWins = pieces().allWinLines(toWin)
+    val possibleWins = columns.allWinLines(toWin)
 
     val winners = possibleWins.mapNotNull { checkForWinner(it) }
-    return if (winners.isEmpty() && columns.sumBy { it.size } == numRows * numColumns) {
+    return if (winners.isEmpty() && columns.isFull) {
       //Draw, everyone wins!!!
       listOfNotNull(player1, player2)
     } else {
@@ -132,11 +126,5 @@ class Board(
   override fun numOfCols(): Int = numColumns
   override fun numOfRows(): Int = numRows
   override fun toWin(): Int = toWin
-
-  override fun pieces(): List<List<Piece>> = columns
-    .map { it.toMutableList() }
-    .map {
-      while (it.size < numRows) it.add(Piece.Empty)
-      it.toList()
-    }
+  override fun pieces(): List<List<Piece>> = columns.map { it.toList() }
 }

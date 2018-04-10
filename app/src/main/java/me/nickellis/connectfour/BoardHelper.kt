@@ -6,6 +6,7 @@ import kotlin.math.min
 
 val List<List<Piece>>.columnCount get() = this.size
 val List<List<Piece>>.rowCount get() = this.getOrNull(0)?.size ?: 0 //assumes a rectangle
+val List<List<Piece>>.isFull get() = this.sumBy { it.count { it == Piece.Empty } } == 0
 
 /**
  * Gets the piece at the given point
@@ -156,3 +157,4 @@ fun <T> List<T>.consecutive(toMatch: T): Int {
 
   return max
 }
+
