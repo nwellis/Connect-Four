@@ -101,10 +101,7 @@ class MainActivity : AppCompatActivity() {
     board.onMoveMade { col, row, piece ->
       val vColumn = vBoard.getChildAt(col) as ViewGroup
       val vRow = vColumn.getChildAt(vColumn.childCount - row - 1) as ImageView
-      vRow.setImageResource(when(piece) {
-        Piece.Black -> R.drawable.cell_black
-        else -> R.drawable.cell_red
-      })
+      vRow.setImageResource(piece.drawableId)
 
       // Wait for user input, or run AI move
       val player = board.whosTurn()
@@ -132,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     board.onReset {
       vBoard.getChildren<ViewGroup>()
         .flatMap { it.getChildren<ImageView>() }
-        .forEach { it.setImageResource(R.drawable.cell_empty) }
+        .forEach { it.setImageResource(Piece.Empty.drawableId) }
     }
   }
 
@@ -163,7 +160,7 @@ class MainActivity : AppCompatActivity() {
       R.layout.board_cell, this, false
     ) as ImageView
 
-    vImageView.setImageResource(R.drawable.cell_empty)
+    vImageView.setImageResource(Piece.Empty.drawableId)
     this.addView(vImageView)
     return vImageView
   }

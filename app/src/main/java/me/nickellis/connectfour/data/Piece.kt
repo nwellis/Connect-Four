@@ -1,3 +1,10 @@
 package me.nickellis.connectfour.data
 
-enum class Piece { Empty, Black, Red }
+import android.support.annotation.DrawableRes
+import me.nickellis.connectfour.R
+
+enum class Piece(@DrawableRes val drawableId: Int) {
+  Empty(R.drawable.cell_empty),
+  Black(R.drawable.cell_black),
+  Red(R.drawable.cell_red)
+}
