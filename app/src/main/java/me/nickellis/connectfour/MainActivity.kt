@@ -13,6 +13,7 @@ import icepick.State
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import me.nickellis.connectfour.ai.AI
 import me.nickellis.connectfour.data.Board
@@ -135,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
   private suspend fun makeAIMove(r2d2: AI, piece: Piece) {
     vInfo.text = resources.getString(R.string.s_is_thinking, r2d2.toString())
-    val move = r2d2.makeMove(board)
+    val move = async { r2d2.makeMove(board) }.await()
     val msg = board.tryMakeMove(move, piece)
     if (msg != null) {
       val error = "$r2d2 made an invalid move on column $move: $msg"
