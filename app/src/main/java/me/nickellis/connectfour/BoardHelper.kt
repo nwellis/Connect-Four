@@ -113,7 +113,7 @@ fun List<List<Piece>>.allWinLines(toWin: Int): List<List<Piece>> {
     traverse(0, r, 1, -1)
   })
   lines.addAll((1..this.columnCount-toWin).map { c ->
-    traverse(c, 0, 1, -1)
+    traverse(c, 0, 1, 1)
   })
 
   //Downward Diagonal Win
@@ -121,7 +121,7 @@ fun List<List<Piece>>.allWinLines(toWin: Int): List<List<Piece>> {
     traverse(0, r, 1, 1)
   })
   lines.addAll((1..this.columnCount-toWin).map { c ->
-    traverse(c, 0, 1, 1)
+    traverse(c, this.rowCount - 1, 1, -1)
   })
 
   return lines
