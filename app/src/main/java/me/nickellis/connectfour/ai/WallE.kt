@@ -1,11 +1,9 @@
 package me.nickellis.connectfour.ai
 
-import me.nickellis.connectfour.Player
-import me.nickellis.connectfour.allWinLines
-import me.nickellis.connectfour.consecutive
+import me.nickellis.connectfour.*
 import me.nickellis.connectfour.data.Piece
 import me.nickellis.connectfour.data.ReadOnlyBoard
-import me.nickellis.connectfour.putPiece
+import kotlin.math.abs
 
 /**
  * An example AI to be used as a reference.
@@ -56,7 +54,10 @@ class WallE(piece: Piece) : Player(piece, false), AI {
           .sumBy { it.weight }
       }
 
-    return againstRating + forRating
+    val middle = pieces.columnCount/2f
+    val middleRating = (middle - abs(move - middle)).toInt() * Move.NearMiddle.weight
+
+    return againstRating + forRating + middleRating
   }
 }
 
@@ -65,5 +66,6 @@ enum class Move(val weight: Int) {
   PreventWin(100000),
   Three(300),
   Two(100),
-  Neutral(0)
+  Neutral(0),
+  NearMiddle(10)
 }
