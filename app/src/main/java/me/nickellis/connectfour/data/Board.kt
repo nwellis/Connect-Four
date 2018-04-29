@@ -94,7 +94,7 @@ class Board(
   private fun computeWinners(): List<Player> {
     val possibleWins = columns.allWinLines(toWin)
 
-    val winners = possibleWins.mapNotNull { checkForWinner(it) }
+    val winners = possibleWins.mapNotNull { checkForWinner(it.pieces) }
     return if (winners.isEmpty() && columns.isFull) {
       //Draw, everyone wins!!!
       listOfNotNull(player1, player2)

@@ -73,17 +73,17 @@ fun List<List<Piece>>.traverse(
  * @param r row index
  * @return horizontal, vertical, and diagonals intersecting the point
  */
-fun List<List<Piece>>.linesAtPoint(c: Int, r: Int): List<List<Piece>> {
+fun List<List<Piece>>.linesAtPoint(c: Int, r: Int): List<GameLine> {
   val topC = max(r - c, this.columnCount - 1)
   val topR = min(r + c, this.rowCount - 1)
   val botC = max(c - r, 0)
   val botR = max(r - c, 0)
 
   return listOf(
-    traverse(0, r, 1, 0), //horizontal
-    traverse(c, 0, 0, 1), //vertical
-    traverse(topC, topR, -1, -1), //downward diagonal
-    traverse(botC, botR, 1, 1) //upward diagonal
+    GameLine(LineDirection.Horizontal, traverse(0, r, 1, 0)),
+    GameLine(LineDirection.Vertical, traverse(c, 0, 0, 1)),
+    GameLine(LineDirection.Diagonal, traverse(topC, topR, -1, -1)),
+    GameLine(LineDirection.Diagonal, traverse(botC, botR, 1, 1))
   )
 }
 
@@ -97,31 +97,33 @@ fun List<List<Piece>>.linesAtPoint(c: Int, r: Int): List<List<Piece>> {
  * @param toWin how many pieces it takes to win
  * @return all the lines that could have a win, not taking into account the pieces in it
  */
-fun List<List<Piece>>.allWinLines(toWin: Int): List<List<Piece>> {
-  val lines = mutableListOf<List<Piece>>()
+fun List<List<Piece>>.allWinLines(toWin: Int): List<GameLine> {
+  val lines = mutableListOf<GameLine>()
+
+  GameLine(LineDirection.Vertical, listOf())
 
   //Vertical Win
-  lines.addAll(this.map { it.toList() })
+  lines.addAll(this.map { GameLine(LineDirection.Vertical, it.toList()) })
 
   //Horizontal Win
   lines.addAll((0 until this.rowCount).map { r ->
-    traverse(0, r, 1, 0)
+    GameLine(LineDirection.Horizontal, traverse(0, r, 1, 0))
   })
 
   //Upward Diagonal Win
   lines.addAll((this.rowCount-1 downTo toWin-1).map { r ->
-    traverse(0, r, 1, -1)
+    GameLine(LineDirection.Diagonal, traverse(0, r, 1, -1))
   })
   lines.addAll((1..this.columnCount-toWin).map { c ->
-    traverse(c, 0, 1, 1)
+    GameLine(LineDirection.Diagonal, traverse(c, 0, 1, 1))
   })
 
   //Downward Diagonal Win
   lines.addAll((0..this.rowCount-toWin).map { r ->
-    traverse(0, r, 1, 1)
+    GameLine(LineDirection.Diagonal, traverse(0, r, 1, 1))
   })
   lines.addAll((1..this.columnCount-toWin).map { c ->
-    traverse(c, this.rowCount - 1, 1, -1)
+    GameLine(LineDirection.Diagonal, traverse(c, this.rowCount - 1, 1, -1))
   })
 
   return lines
@@ -158,3 +160,6 @@ fun <T> List<T>.consecutive(toMatch: T): Int {
   return max
 }
 
+enum class LineDirection { Horizontal, Vertical, Diagonal }
+
+data class GameLine(val direction: LineDirection, val pieces: List<Piece>)

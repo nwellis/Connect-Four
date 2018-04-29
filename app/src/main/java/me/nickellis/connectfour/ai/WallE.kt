@@ -27,7 +27,7 @@ class WallE(piece: Piece) : Player(piece, false), AI {
       .sumBy {
         val piece = it.first
         it.second.sumBy {
-          val consecutive = it.consecutive(piece)
+          val consecutive = it.pieces.consecutive(piece)
           if (consecutive >= toWin) Move.PreventWin.weight
           else Move.Neutral.weight
         }
@@ -36,7 +36,7 @@ class WallE(piece: Piece) : Player(piece, false), AI {
     val forRating = pieces.putPiece(move, piece)
       .allWinLines(4)
       .sumBy {
-        it.consecutive()
+        it.pieces.consecutive()
           .map {
             when(it.first) {
               piece -> {
@@ -67,5 +67,6 @@ enum class Move(val weight: Int) {
   Three(300),
   Two(100),
   Neutral(0),
+  Diagonal(20),
   NearMiddle(10)
 }
